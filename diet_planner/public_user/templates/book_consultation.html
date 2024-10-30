@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Book Consultation{% endblock title %}
+{% block content %}
+
+<div class="container my-5">
+    <h2 class="text-center">Book a Consultation with <span class="text-capitalize">{{ dietitian.dietitian_profile.full_name }}</span></h2>
+
+    <div class="row m-0 mt-4">
+        <div class="col-12 col-md-4 card mx-auto p-3">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+        
+                <button type="submit" class="btn btn-primary">Book Consultation</button>
+            </form>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} mt-3">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+{% endblock content %}

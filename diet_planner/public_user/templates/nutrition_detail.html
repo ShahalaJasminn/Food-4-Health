@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Nutrition Plan Details{% endblock title %}
+
+{% block style %}
+<style>
+  .card {
+    margin-top: 15px;
+  }
+  .meal-details {
+    font-size: 0.9rem;
+  }
+  .table-nutrition {
+    width: 100%;
+    margin-top: 10px;
+  }
+  .calories-badge {
+    font-size: 0.85rem;
+    padding: 5px;
+    background-color: #ff6b6b;
+    color: white;
+    border-radius: 5px;
+  }
+</style>
+{% endblock style %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <!-- Nutrition Plan Header -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3>{{ nutrition_plan.plan_name }}</h3>
+            <p class="text-muted">{{ nutrition_plan.description }}</p>
+            <p><small>Created by: {{ nutrition_plan.dietitian.username }} on {{ nutrition_plan.created_at|date:"M d, Y" }}</small></p>
+            <hr>
+        </div>
+    </div>
+
+    <!-- Meal Types Section -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4>Meals in this Plan</h4>
+            {% if nutrition_plan.meal_types.all %}
+                {% for meal in nutrition_plan.meal_types.all %}
+                <div class="card mt-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ meal.name }}</h5>
+                        <span class="calories-badge">{{ meal.calories }} kcal</span>
+                    </div>
+                    <div class="card-body meal-details">
+                        <p><strong>Description:</strong> {{ meal.description|default:"No description available" }}</p>
+                        <div class="table-responsive">
+                            <table class="table table-nutrition table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Calories</th>
+                                        <th>Fat</th>
+                                        <th>Cholesterol</th>
+                                        <th>Protein</th>
+                                        <th>Carbohydrates</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ meal.calories }} kcal</td>
+                                        <td>{{ meal.fat }} g</td>
+                                        <td>{{ meal.cholesterol }} mg</td>
+                                        <td>{{ meal.protein }} g</td>
+                                        <td>{{ meal.carbohydrates }} g</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No meals available in this plan.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

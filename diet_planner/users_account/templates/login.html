@@ -1,0 +1,99 @@
+{% extends "account_base.html" %}
+{% block title %}Login Page{% endblock title %}
+
+{% block content %}
+    <div class="card col-12 col-md-4 bg-light">
+        <h3 class="mt-3 text-center">Login</h3>
+        <hr>
+
+        <form method="POST" novalidate>
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {% for error in form.non_field_errors %}
+                        <p class="small m-0 p-0">{{ error }}</p>
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>            
+            {% endif %}
+            
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Username</label>
+                <input
+                    type="text"
+                    class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                    name="username"
+                    id="id_username"
+                    placeholder="Enter your username"
+                    value="{{ form.username.value|default_if_none:'' }}"
+                />
+                {% if form.username.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.username.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="id_password" class="form-label">Password</label>
+                <input
+                    type="password"
+                    class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                    name="password"
+                    id="id_password"
+                    placeholder="Enter your password"
+                />
+                {% if form.password.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.password.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="text-end">
+                    <a class="small" href="#">Forget password</a>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary form-control">Log-in</button>
+
+            <!-- Trigger modal when "Create Now" is clicked -->
+            <div class="mt-3 text-center">
+                <span>Don't have an account? <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#userTypeModal">Create Now</a></span>
+            </div>
+        </form>
+    </div>
+
+    <!-- User Type Modal -->
+    <!-- Modal -->
+    <div class="modal fade" id="userTypeModal" tabindex="-1" aria-labelledby="userTypeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"> <!-- Add modal-dialog-centered class -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userTypeModalLabel">Select Account Type</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Please select the type of account you want to create:</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" onclick="redirectWithRole('user')">User</button>
+                        <button class="btn btn-primary" onclick="redirectWithRole('dietitian')">Dietitian</button>
+                        <button class="btn btn-primary" onclick="redirectWithRole('admin')">Admin</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function redirectWithRole(role) {
+            // Redirect to the registration page with the selected role as a query parameter
+            window.location.href = "{% url 'registration' %}?role=" + role;
+        }
+    </script>
+
+{% endblock content %}

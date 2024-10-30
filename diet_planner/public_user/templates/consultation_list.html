@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}My Consultations{% endblock title %}
+
+{% block style %}
+    <style>
+        .consultation-list {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .consultation-card {
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .consultation-info h5 {
+            margin: 0;
+            color: #343a40;
+        }
+        .status-tag {
+            padding: 5px 10px;
+            border-radius: 15px;
+            color: #fff;
+        }
+        .confirmed { background-color: #28a745; }
+        .not-confirmed { background-color: #dc3545; }
+        .detail-btn {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .detail-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+{% endblock style %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>My Consultations</h2>
+    <div class="consultation-list">
+        {% for consultation in consultations %}
+            <div class="consultation-card">
+                <div class="consultation-info">
+                    <h5>With {{ consultation.dietitian.dietitian_profile.full_name }}</h5>
+                    <p>Date: {{ consultation.date|date:"D, M d, Y" }}</p>
+                    <p>Time: {{ consultation.date|time:"H:i" }}</p>
+                    <span class="status-tag {% if consultation.confirmed %}confirmed{% else %}not-confirmed{% endif %}">
+                        {% if consultation.confirmed %}Confirmed{% else %}Pending{% endif %}
+                    </span>
+                </div>
+                <a href="{% url 'consultation_detail' consultation.id %}" class="detail-btn">View Details</a>
+            </div>
+        {% empty %}
+            <p>No consultations booked yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

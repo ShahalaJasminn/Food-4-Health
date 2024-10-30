@@ -1,0 +1,66 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Dietitian Details: {{ dietitian.name }}{% endblock title %}
+{% block style %}
+<style>
+    .dietitian-detail {
+        margin: 20px;
+    }
+    .certificate {
+        margin-top: 20px;
+    }
+    .btn-verify {
+        background-color: #28A745;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+{% endblock style %}
+{% block content %}
+<div class="dietitian-detail">
+    <h2>Details for {{ dietitian.dietitian_profile.full_name }}</h2>
+    <img src="{{ dietitian.dietitian_profile.photo.url }}" class="img-fluid" style="height: 150px;" alt="">
+    <p><strong>Email:</strong> {{ dietitian.email }}</p>
+    <p><strong>Specialization:</strong> {{ dietitian.dietitian_profile.specialties }}</p>
+    <p><strong>Verified:</strong> {% if dietitian.dietitian_profile.verified %}Yes{% else %}No{% endif %}</p>
+
+    <div class="certificate">
+        <h3>Dietitian Certificate</h3>
+        {% if dietitian.dietitian_profile.certificate %}
+            <embed src="{{ dietitian.dietitian_profile.certificate.url }}" type="application/pdf" width="600" height="500" />
+        {% else %}
+            <p>No certificate available.</p>
+        {% endif %}
+    </div>
+    {% if dietitian.dietitian_profile.verified %}
+        <button class="btn btn-success mt-3" disabled>Verify Dietitian</button>
+    {% else %}
+        <button class="btn btn-success mt-3" onclick="verifyDietitian({{ dietitian.dietitian_profile.id }})">Verify Dietitian</button>
+    {% endif %}
+</div>
+
+<script>
+    function verifyDietitian(dietitianId) {
+        // AJAX call to verify the dietitian
+        fetch(`/administration/verify-dietitian/${dietitianId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ verified: true })
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Dietitian verified successfully!');
+                location.reload();  // Refresh the page to update the status
+            } else {
+                alert('Error verifying dietitian.');
+            }
+        });
+    }
+</script>
+{% endblock content %}

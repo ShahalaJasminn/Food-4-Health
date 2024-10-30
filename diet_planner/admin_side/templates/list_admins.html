@@ -1,0 +1,58 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Admin Management{% endblock title %}
+{% block style %}
+<style>
+    .admin-list {
+        margin: 20px;
+    }
+
+</style>
+{% endblock style %}
+{% block content %}
+<div class="admin-list">
+    <h2>Admin Management</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Joined</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for admin in admins %}
+            <tr>
+                <td>{{ admin.username }}</td>
+                <td>{{ admin.email }}</td>
+                <td>{{ admin.date_joined|date:"D, d M Y" }}</td>
+                <td>
+                    <button onclick="block_user({{admin.id}})"  class="btn {% if admin.is_active %}btn-danger{% else %}btn-success {% endif %}">{% if admin.is_active %}Block{% else %}Unblock{% endif %}</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function block_user(userID) {
+        // AJAX call to verify the dietitian
+        fetch(`/administration/block_user/${userID}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Error updating status.');
+            }
+        });
+    }
+</script>
+{% endblock content %}

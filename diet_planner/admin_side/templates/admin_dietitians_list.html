@@ -1,0 +1,38 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Dietitian Management{% endblock title %}
+{% block style %}
+<style>
+    .dietitian-list {
+        margin: 20px;
+    }
+
+</style>
+{% endblock style %}
+{% block content %}
+<div class="dietitian-list">
+    <h2>Dietitian Management</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Specialization</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dietitian in dietitians %}
+            <tr>
+                <td>{{ dietitian.dietitian_profile.full_name }}</td>
+                <td>{{ dietitian.email }}</td>
+                <td>{% for specialty in dietitian.dietitian_profile.specialties.all %}<span class="me-1 bg-info badge">{{specialty.name }}</span>{% endfor %}</td>
+                <td>
+                    <a href="{% url 'admin_dietitian_detail' dietitian.id %}" class="btn btn-primary">View Details</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

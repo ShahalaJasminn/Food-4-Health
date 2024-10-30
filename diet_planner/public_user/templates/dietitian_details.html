@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Dietitian Details{% endblock title %}
+{% block style %}
+    <style>
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #007bff;
+        }
+        .profile-info h2 {
+            margin: 0;
+            font-size: 2rem;
+            color: #343a40;
+        }
+        .profile-info p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        .specialties, .availability {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .specialties h4, .availability h4 {
+            font-size: 1.25rem;
+            color: #007bff;
+        }
+        .specialty-tag, .availability-tag {
+            display: inline-block;
+            margin: 5px 5px 0 0;
+            padding: 5px 10px;
+            font-size: 0.875rem;
+            color: #fff;
+            background-color: #17a2b8;
+            border-radius: 20px;
+        }
+        .book-btn {
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            padding: 10px 20px;
+            text-align: center;
+            display: inline-block;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        .book-btn:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+    </style>
+{% endblock style %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="profile-header mb-4">
+        <img src="{{ dietitian.dietitian_profile.photo.url }}" alt="Dietitian Photo" class="profile-photo">
+        <div class="profile-info">
+            <h2>{{ dietitian.dietitian_profile.full_name }}</h2>
+            <p class="fs-6 mb-3">{{ dietitian.dietitian_profile.qualifications }}</p>
+            <a href="{% url "book_consultation" dietitian.id %}" class="book-btn">Book a Consultation</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Specialties Section -->
+        <div class="col-md-6 mb-4">
+            <div class="specialties">
+                <h4>Specialties</h4>
+                {% if specialties %}
+                    {% for specialty in specialties.all %}
+                        <span class="specialty-tag">{{ specialty.name }}</span>
+                    {% endfor %}
+                {% else %}
+                    <p>No specialties available</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Availability Section -->
+        <div class="col-md-6 mb-4">
+            <div class="availability">
+                <h4>Availability</h4>
+                {% if availability %}
+                    <p>Available Days: {{ availability.get_available_days_list|join:", " }}</p>
+                    <p>Time: {{ availability.start_time }} - {{ availability.end_time }}</p>
+                {% else %}
+                    <p>Available time not mentioned yet.</p>
+                {% endif %}
+                {% if dietitian.dietitian_profile.available %}
+                    <span class="availability-tag bg-success">Accepting Clients</span>
+                {% else %}
+                    <span class="availability-tag bg-danger">Not Accepting Clients</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Information Section -->
+    <div class="additional-info p-3 mt-3 bg-light rounded shadow-sm">
+        <h4>About {{ dietitian.dietitian_profile.full_name }}</h4>
+        <p>{{ dietitian.dietitian_profile.bio }}</p>
+    </div>
+</div>
+{% endblock content %}

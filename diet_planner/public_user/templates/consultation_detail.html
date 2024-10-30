@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Consultation Details{% endblock title %}
+
+{% block style %}
+    <style>
+        .consultation-detail {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .consultation-info, .message-section, .chat-history {
+            margin-bottom: 20px;
+        }
+
+        .chat-history {
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: #ffffff;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message .sender {
+            font-weight: bold;
+            color: #343a40;
+        }
+        .message .timestamp {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        .message .text {
+            margin: 5px 0 0 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            display: inline-block;
+        }
+        .message-form textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
+        
+    </style>
+{% endblock style %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>Consultation Details</h2>
+    <div class="consultation-detail">
+        <div class="consultation-info">
+            <h3>With <span class="text-capitalize">{{ consultation.dietitian.dietitian_profile.full_name }}</span></h3>
+            <p>Date: {{ consultation.date|date:"D, M d, Y" }}</p>
+            <p>Time: {{ consultation.date|time:"H:i" }}</p>
+            <span class="py-2 px-3 rounded shadow text-white fw-bold {% if consultation.confirmed %}bg-success{% else %}bg-danger{% endif %}">
+                {% if consultation.confirmed %}Confirmed{% else %}Pending{% endif %}
+            </span>
+        </div>
+
+        <!-- Chat History -->
+        <div class="p-3 bg-white">
+            
+            <div id="chat-log" class="p-3" style="height: 250px; overflow-y: scroll; border-radius: 5px;">
+                {% for message in messages_list %}
+                    <p><strong>{{ message.sender.username }}:</strong> {{ message.text }}</p>
+                {% endfor %}
+            </div>
+        
+            <div class="d-flex">
+                <input id="chat-message-input" type="text" placeholder="Type your message..." autocomplete="off" class="form-control me-3" disabled>
+                <button id="chat-message-submit" class="btn btn-primary" disabled>Send</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<script>
+    const consultationId = '{{ consultation.id }}';
+    const userName = "{{ request.user.username }}";
+    const consultationDateTime = new Date("{{ consultation.date|date:'Y-m-d H:i:s' }}").getTime();
+    
+    // Function to check if the current time is within the consultation time
+    function isWithinConsultationTime() {
+        const now = Date.now();
+        const consultationStartTime = consultationDateTime;
+        const consultationEndTime = consultationStartTime + 60 * 60 * 1000; // Assuming a 1-hour consultation
+
+        return now >= consultationStartTime && now <= consultationEndTime;
+    }
+
+    const chatSocket = new WebSocket(
+        `ws://${window.location.host}/ws/consultation/${consultationId}/`
+    );
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const chatLog = document.querySelector('#chat-log');
+        const messageElement = document.createElement('p');
+        messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.message}`;
+        chatLog.appendChild(messageElement);
+        chatLog.scrollTop = chatLog.scrollHeight;
+
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    // Enable the chat input and send button only if within consultation time
+    if (isWithinConsultationTime()) {
+        document.querySelector('#chat-message-input').disabled = false;
+        document.querySelector('#chat-message-submit').disabled = false;
+    }
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // Enter key
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'sender': userName
+        }));
+        messageInputDom.value = '';
+    };
+</script>
+
+{% endblock content %}

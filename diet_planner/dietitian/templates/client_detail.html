@@ -1,0 +1,158 @@
+{% extends "dietitian_base.html" %}
+
+{% block title %}Client Details{% endblock title %}
+
+{% block style %}
+<style>
+    .client-detail-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    }
+    .client-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .client-header h2 {
+        font-weight: bold;
+        color: #007bff;
+    }
+    .client-info {
+        margin-top: 20px;
+        font-size: 1em;
+        color: #343a40;
+    }
+    .client-info p {
+        margin: 10px 0;
+    }
+    .consultation-history {
+        margin-top: 30px;
+    }
+    .consultation-card {
+        padding: 15px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        border-left: 5px solid #007bff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
+    .consultation-card h4 {
+        color: #007bff;
+        margin-bottom: 5px;
+    }
+    .consultation-info {
+        font-size: 0.9em;
+        color: #555;
+    }
+    .back-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #6c757d;
+        color: #ffffff;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+    }
+    .back-btn:hover {
+        background-color: #495057;
+    }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="container">
+    <div class="client-detail-container">
+        <div class="client-header">
+            <h2 class="text-capitalize">{{ client.user_profile.full_name }}</h2>
+            <p>Email: {{ client.email }}</p>
+        </div>
+
+        <div class="client-info">
+            <h4>Client Information</h4>
+            <p>Joined: {{ client.date_joined|date:"D, M d, Y" }}</p>
+            <p>Age: {{ client.user_profile.age }}</p>
+            <p>Weight: {{ client.user_profile.weight }}(Kg)</p>
+            <p>Height: {{ client.user_profile.height }}(cm)</p>
+            <p>Gender: {{ client.user_profile.gender }}</p>
+            <p>Dietary Preference : {{ client.user_profile.dietary_preference }}</p>
+            <p>Last Consultation: 
+                {% with client.client_consultations.last as last_consultation %}
+                    {{ last_consultation.date|date:"D, M d, Y" }} at {{ last_consultation.date|time:"H:i" }}
+                {% endwith %}
+            </p>
+            {% if client.nutrition_plans.exists %}
+                <a href="{% url 'nutrition_plan_detail' client.nutrition_plans.first.id %}" class="btn btn-primary">
+                    View Nutrition Plan
+                </a>
+            {% else %}
+                <a href="{% url 'create_nutrition_plan' %}?client={{ client.id }}" class="btn btn-success">
+                    Create Nutrition Plan
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="client-progress mt-4">
+            <h4>Client Progress</h4>
+            <p>Current Progress: <span id="current-progress">{{ progress.progress|default:"0" }}%</span></p>
+            <form id="update-progress-form" method="post">
+                {% csrf_token %}
+                {{ form.progress.label_tag }}
+                {{ form.progress }}
+                <button type="button" id="update-progress-btn" class="btn btn-primary mt-2">Update Progress</button>
+            </form>
+            <div id="progress-success" class="alert alert-success mt-2" style="display: none;">Progress updated successfully!</div>
+        </div>
+
+        <div class="consultation-history">
+            <h4>Consultation History</h4>
+            {% if consultations %}
+                {% for consultation in consultations %}
+                    <div class="consultation-card">
+                        <h4>{{ consultation.date|date:"D, M d, Y" }} at {{ consultation.date|time:"H:i" }}</h4>
+                        <div class="consultation-info">
+                            <p>Status: 
+                                <span class="{% if consultation.confirmed %}text-success{% else %}text-danger{% endif %}">
+                                    {% if consultation.confirmed %}Confirmed{% else %}Pending{% endif %}
+                                </span>
+                            </p>
+                            <p>Notes: {{ consultation.notes|default:"No notes available" }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No consultations found for this client.</p>
+            {% endif %}
+        </div>
+
+        <a href="{% url 'list_clients' %}" class="back-btn">Back to Clients</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById("update-progress-btn").addEventListener("click", function() {
+        const form = document.getElementById("update-progress-form");
+        const progress = form.querySelector("#id_progress").value;
+        const csrfToken = form.querySelector("[name=csrfmiddlewaretoken]").value;
+
+        fetch("{% url 'update_client_progress' client.id %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            body: JSON.stringify({ "progress": progress })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("current-progress").innerText = data.new_progress + "%";
+                document.getElementById("progress-success").style.display = "block";
+            }
+        });
+    });
+</script>
+
+{% endblock content %}

@@ -1,0 +1,128 @@
+{% extends "admin_base.html" %}
+{% block style %}
+<style>
+  .chart-container {
+    height: 300px;
+  }
+</style>
+{% endblock style %}
+
+{% block content %}
+
+<div class="container mt-3">
+  <!-- Summary Cards -->
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <i class="bi bi-person-check card-icon"></i>
+          <h5 class="card-title mt-2">Total Clients</h5>
+          <p class="card-text">150</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <i class="bi bi-calendar-check card-icon"></i>
+          <h5 class="card-title mt-2">Appointments</h5>
+          <p class="card-text">28 Today</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <i class="bi bi-envelope card-icon"></i>
+          <h5 class="card-title mt-2">New Messages</h5>
+          <p class="card-text">5</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <i class="bi bi-graph-up card-icon"></i>
+          <h5 class="card-title mt-2">Goal Progress</h5>
+          <p class="card-text">75%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row mt-4">
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Client Progress</h5>
+          <div class="chart-container bg-light rounded">
+            <!-- Insert chart.js or other chart library chart here -->
+            <img
+              {% comment %} src="https://via.placeholder.com/300x200" {% endcomment %}
+              class="w-100"
+              alt="Chart Example"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Weekly Nutrient Intake</h5>
+          <div class="chart-container bg-light rounded">
+            <!-- Insert chart.js or other chart library chart here -->
+            <img
+              {% comment %} src="https://via.placeholder.com/300x200" {% endcomment %}
+              class="w-100"
+              alt="Chart Example"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Clients Table -->
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Recent Clients</h5>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Goal</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>John Doe</td>
+                <td>34</td>
+                <td>Weight Loss</td>
+                <td><span class="badge bg-success">Active</span></td>
+              </tr>
+              <tr>
+                <td>Jane Smith</td>
+                <td>29</td>
+                <td>Muscle Gain</td>
+                <td><span class="badge bg-warning">Pending</span></td>
+              </tr>
+              <tr>
+                <td>Emily Johnson</td>
+                <td>42</td>
+                <td>Wellness</td>
+                <td><span class="badge bg-danger">Inactive</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

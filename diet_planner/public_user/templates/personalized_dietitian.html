@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Dietitians{% endblock title %}
+{% block style %}
+    <style>
+        .dietitian-card {
+            height: 100%; /* Full height of the column */
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .dietitian-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .dietitian-photo {
+            height: 200px;
+            width: 100%;
+            object-fit: contain;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .dietitian-info {
+            padding: 15px;
+        }
+        .dietitian-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0 0;
+        }
+    </style>
+{% endblock style %}
+{% block content %}
+    <h1 class="text-center">Personalized Dietitians</h1>
+    <p class="text-info small text-center mb-4">Personalized dietitians based on your dietary goal ({% for goal in user.user_profile.dietary_goal.all %}{{goal.name}}{% endfor %})</p>
+    <div class="row d-flex justify-content-center m-0">
+        {% for dietitian in dietitians %}
+        <div class="col-12 col-md-4 col-lg-3 p-2">
+            <div class="dietitian-card">
+                <img src="{{ dietitian.dietitian_profile.photo.url }}" class="dietitian-photo" alt="Dietitian Photo">
+                <div class="dietitian-info text-center">
+                    <p class="dietitian-name">{{ dietitian.dietitian_profile.full_name }}</p>
+                    <p class="text-muted">{{ dietitian.dietitian_profile.specialty }}</p>
+                    <a href="{% url 'dietitian_details' dietitian.id %}" class="btn btn-primary btn-sm mt-2">View Profile</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center text-muted">No dietitians found for this specialty.</p>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

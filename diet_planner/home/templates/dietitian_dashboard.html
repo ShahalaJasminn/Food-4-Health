@@ -1,0 +1,132 @@
+{% extends "dietitian_base.html" %}
+
+{% block title %}Dietitian Dashboard{% endblock title %} 
+
+{% block style %}
+<style>
+  .chart-container {
+    height: 300px;
+  }
+</style>
+{% endblock style %}
+
+{% block content %}
+
+<div class="container mt-3">
+  <!-- Summary Cards -->
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <i class="bi bi-person-check card-icon"></i>
+          <h5 class="card-title mt-2">Total Clients</h5>
+          <p class="card-text">{{client_count}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <i class="bi bi-calendar-check card-icon"></i>
+          <h5 class="card-title mt-2">Appointments</h5>
+          <p class="card-text">{{appointment_count}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <i class="bi bi-card-checklist card-icon"></i>
+          <h5 class="card-title mt-2">Nutrition Plans</h5>
+          <p class="card-text">{{nutrition_plan_count}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <i class="bi bi-graph-up card-icon"></i>
+          <h5 class="card-title mt-2">Goal Progress</h5>
+          <p class="card-text">{{goal_progress}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row mt-4">
+    <div class="col-12 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Client Progress</h5>
+          <div class="chart-container bg-light rounded">
+            <!-- Insert chart.js or other chart library chart here -->
+            <canvas id="clientProgressChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Clients Table -->
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Recent Consultations</h5>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Goal</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for consultation in recent_consultation %}
+              <tr>
+                <td class="text-capitalize">{{consultation.client.user_profile.full_name}}</td>
+                <td>{{consultation.client.user_profile.age}}</td>
+                <td>{{consultation.date|date:"D, M d, Y" }} at {{ consultation.date|time:"H:i" }}</td>
+                <td><span class="badge {% if consultation.confirmed %}bg-success {% else %}bg-danger{% endif %}">{% if consultation.confirmed %}Confirmed{% else %}Pending{% endif %}</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById('clientProgressChart').getContext('2d');
+  
+  const clientProgressChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: {{ client_names|safe }},
+          datasets: [{
+              label: 'Client Progress (%)',
+              data: {{ client_progress_values|safe }},
+              borderColor: 'rgba(75, 192, 192, 1)',
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderWidth: 2
+          }]
+      },
+      options: {
+          scales: {
+              y: {
+                  beginAtZero: true,
+                  max: 100
+              }
+          }
+      }
+  });
+</script>
+
+{% endblock content %}

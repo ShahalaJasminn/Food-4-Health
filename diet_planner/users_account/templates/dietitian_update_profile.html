@@ -1,0 +1,59 @@
+{% extends "dietitian_base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Update Profile{% endblock title %}
+
+{% block style %}
+    <style>
+        .profile-photo-preview {
+            height: 150px;
+            width: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 0.5rem;
+        }
+        .checkbox-group label {
+            display: block;
+            padding: 0.5rem 1rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .checkbox-group input[type="checkbox"] {
+            display: none;
+        }
+        .checkbox-group input[type="checkbox"]:checked + label {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+    </style>
+{% endblock style %}
+
+{% block content %}
+    <div class="row m-0 d-flex justify-content-center">
+        <div class="col-12 col-md-6">
+            <div class="card mt-5 mb-3 bg-light p-4 shadow">
+                <h2 class="text-center">Update Your Profile</h2>
+                <hr>
+
+                <!-- Form begins -->
+                <form method="POST" enctype="multipart/form-data" class="row">
+                    {% csrf_token %}
+                    {{form|crispy}}
+                    <!-- Buttons -->
+                    <div class="col-12 text-end">
+                        <input type="reset" class="btn btn-outline-warning px-4 py-1 btn-clear" value="Clear">
+                        <input type="submit" class="btn btn-outline-success px-4 py-1" value="Update">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

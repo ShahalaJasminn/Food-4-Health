@@ -1,0 +1,119 @@
+{% extends "dietitian_base.html" %}
+
+{% block title %}Dietitian Appointments{% endblock title %}
+
+{% block style %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        padding: 15px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+    th {
+        background-color: #007bff;
+        color: white;
+    }
+    .badge {
+        font-size: 0.9rem;
+    }
+
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="bg-light p-4 rounded shadow-sm mb-4">
+    {% if availability %}
+        <h4>Availability</h4>
+        <div class="mb-3">
+            {% for day in availability.get_available_days_list %}
+                <span class="badge bg-primary me-1">{{ day|capfirst }}</span>
+            {% endfor %}
+        </div>
+        <span class="badge bg-info">Available: {{ availability.start_time|time:"h:i A" }} - {{ availability.end_time|time:"h:i A" }}</span>
+    {% else %}
+        <div class="alert alert-warning">No availability set</div>
+    {% endif %}
+    <a href="{% url 'set_availability' %}" class="btn btn-outline-dark">Edit Availability</a>
+</div>
+
+<h3 class="mb-4">New Consultations Booking</h3>
+
+{% if consultations_booked %}
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for consultation in consultations_booked %}
+                <tr>
+                    <td>{{ consultation.client.user_profile.full_name }}</td>
+                    <td>{{ consultation.date|date:"Y-m-d" }}</td>
+                    <td>{{ consultation.date|time:"H:i" }}</td>
+                    <td>
+                        <span class="badge bg-danger">Pending</span>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'consultation' consultation.id %}" class="btn btn-info btn-sm">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info">No more booking.</div>
+{% endif %}
+
+<h3 class="mb-4">Consultations Finised</h3>
+
+{% if consultations_finished %}
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th colspan="2" class="text-center">Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for consultation in consultations_finished %}
+                <tr>
+                    <td>{{ consultation.client.user_profile.full_name }}</td>
+                    <td>{{ consultation.date|date:"Y-m-d" }}</td>
+                    <td>{{ consultation.date|time:"H:i" }}</td>
+                    <td>
+                        <span class="badge bg-success">Confirmed and Finished</span>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'consultation' consultation.id %}" class="btn btn-info btn-sm">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'chat' consultation.id %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-chat"></i> Chat
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info">No finished consultation.</div>
+{% endif %}
+
+{% endblock content %}

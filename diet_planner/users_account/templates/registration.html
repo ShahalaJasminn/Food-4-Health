@@ -1,0 +1,141 @@
+{% extends "account_base.html" %} 
+
+{% block title %}Registration Page{% endblock title %} 
+
+{% block content %}
+<div class="card col-12 col-md-4 bg-light">
+  <h3 class="mt-3 text-center">Create Account as a <span class="text-uppercase">{{ form.role.value }}</span></h3>
+  <hr />
+  <!-- Include Django form -->
+  <form method="POST" novalidate>
+    {% csrf_token %}
+    <!-- Display form errors (non-field specific) -->
+    {% if form.non_field_errors %}
+      {% for error in form.non_field_errors %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <p class="small m-0 p-0">{{ error }}</p>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <p class="small m-0 p-0 {{ message.tags }}">{{ message }}</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+    <!-- Username field -->
+    <div class="mb-3">
+      <label for="{{ form.username.id_for_label }}" class="form-label"
+        >Username</label
+      >
+      <input
+        type="text"
+        class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+        name="{{ form.username.name }}"
+        id="{{ form.username.id_for_label }}"
+        value="{{ form.username.value|default:'' }}"
+        aria-describedby="usernameHelp"
+      />
+      {% if form.username.errors %}
+      <div class="invalid-feedback">
+        {% for error in form.username.errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% else %}
+      <small id="usernameHelp" class="form-text text-muted"
+        >Enter a unique username.</small
+      >
+      {% endif %}
+    </div>
+
+    <!-- Email field -->
+    <div class="mb-3">
+      <label for="{{ form.email.id_for_label }}" class="form-label"
+        >Email</label
+      >
+      <input
+        type="email"
+        class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+        name="{{ form.email.name }}"
+        id="{{ form.email.id_for_label }}"
+        value="{{ form.email.value|default:'' }}"
+        aria-describedby="emailHelp"
+      />
+      {% if form.email.errors %}
+      <div class="invalid-feedback">
+        {% for error in form.email.errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% else %}
+      <small id="emailHelp" class="form-text text-muted"
+        >We'll never share your email with anyone else.</small
+      >
+      {% endif %}
+    </div>
+
+    <!-- Password field -->
+    <div class="mb-3">
+      <label for="{{ form.password1.id_for_label }}" class="form-label"
+        >Password</label
+      >
+      <input
+        type="password"
+        class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
+        name="{{ form.password1.name }}"
+        id="{{ form.password1.id_for_label }}"
+        value="{{ form.password1.value|default:'' }}"
+        aria-describedby="passwordHelp"
+      />
+      {% if form.password1.errors %}
+      <div class="invalid-feedback">
+        {% for error in form.password1.errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% else %}
+      <small id="passwordHelp" class="form-text text-muted">Password must contain at least 8 characters.</small>
+      {% endif %}
+    </div>
+    
+    <div class="mb-3">
+      <label for="{{ form.password2.id_for_label }}" class="form-label"
+        >Confirm Password</label
+      >
+      <input
+        type="password"
+        class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+        name="{{ form.password2.name }}"
+        id="{{ form.password2.id_for_label }}"
+        value="{{ form.password2.value|default:'' }}"
+        aria-describedby="passwordHelp"
+      />
+      {% if form.password2.errors %}
+      <div class="invalid-feedback">
+        {% for error in form.password2.errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% else %}
+      <small id="passwordHelp" class="form-text text-muted">Password must contain at least 8 characters.</small>
+      {% endif %}
+    </div>
+
+    {% comment %} Role {% endcomment %}
+
+    <input type="hidden" value="{{ form.role.value }}" name="{{form.role.name}}" id="{{form.role.id_for_label}}" />
+
+    <!-- Submit button -->
+    <button type="submit" class="btn btn-success form-control">
+      Create Account
+    </button>
+  </form>
+</div>
+{% endblock content %}

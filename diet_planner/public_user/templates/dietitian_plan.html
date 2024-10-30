@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Dietitian Specialties{% endblock title %}
+{% block style %}
+    <style>
+        .speciality-card {
+            height: 200px; /* Fixed height for uniformity */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: #f8f9fa; /* Light background */
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+        .speciality-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Hover shadow */
+        }
+        .speciality-link {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #007bff;
+            text-decoration: none;
+            white-space: nowrap; /* Prevent line breaks */
+        }
+        .speciality-link:hover {
+            color: #0056b3; /* Darker color on hover */
+        }
+    </style>
+{% endblock style %}
+{% block content %}
+    <div class="container py-5">
+        <h1 class="text-center mb-4">Dietitian Specialties</h1>
+        <div class="row d-flex justify-content-center">
+            {% for speciality in specialities %}
+            <div class="col-10 col-sm-6 col-md-4 col-lg-3 p-3">
+                <a href="{% url 'dietitians' speciality=speciality %}" class="speciality-link">
+                <div class="speciality-card">
+                    {{ speciality }}
+                </div>
+            </a>
+            </div>
+            {% empty %}
+            <div class="col-10 col-sm-6 col-md-4 col-lg-3 p-3">
+                <div class="speciality-card">
+                    <span class="fs-4 fw-bold">No Dietitian Specialties Available</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

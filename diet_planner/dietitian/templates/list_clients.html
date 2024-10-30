@@ -1,0 +1,81 @@
+{% extends "dietitian_base.html" %}
+
+{% block title %}My Clients{% endblock title %}
+
+{% block style %}
+<style>
+    .client-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .client-card {
+        flex: 1 1 300px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+    .client-card:hover {
+        transform: scale(1.02);
+    }
+    .client-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+    .client-info {
+        margin-top: 10px;
+        font-size: 0.9em;
+        color: #555;
+    }
+    .view-details-btn {
+        margin-top: 15px;
+        padding: 8px 15px;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+        transition: background-color 0.2s ease;
+    }
+    .view-details-btn:hover {
+        background-color: #0056b3;
+    }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="">My Clients</h2>
+    <p class="text-muted">Below is the list of clients with confirmed and started consultations.</p>
+
+    {% if clients %}
+        <div class="client-list">
+            {% for client in clients %}
+            <div class="client-card">
+                <div class="client-header">
+                    <span class="text-capitalize">{{ client.user_profile.full_name }}</span>
+                </div>
+                <div class="client-info">
+                    <p>Email: {{ client.email }}</p>
+                    <p>Last Consultation: 
+                        {% with client.client_consultations.last as consultation %}
+                            {{ consultation.date|date:"D, M d, Y" }} at {{ consultation.date|time:"H:i" }}
+                        {% endwith %}
+                    </p>
+                </div>
+                <a href="{% url "client_detail" client.id %}" class="view-details-btn">View Details</a>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-muted">No clients found with confirmed and started consultations.</p>
+    {% endif %}
+</div>
+{% endblock content %}

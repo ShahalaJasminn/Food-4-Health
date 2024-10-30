@@ -1,0 +1,128 @@
+{% extends "dietitian_base.html" %}
+{% block title %}Consultation Details{% endblock title %}
+
+{% block style %}
+    <style>
+        .consultation-detail {
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .chat-history {
+            height: 200px;
+            overflow-y: auto;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message .sender {
+            font-weight: bold;
+            color: #343a40;
+        }
+        .message .timestamp {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        .message .text {
+            margin: 5px 0 0 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            display: inline-block;
+        }
+    </style>
+{% endblock style %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>Consultation Details</h2>
+    <div class="consultation-detail bg-white">
+        <div class="consultation-info mb-3">
+            <h3>With <span class="text-capitalize">{{ consultation.client.user_profile.full_name }}</span></h3>
+            <p><strong>About:</strong>
+                <br>Age:- {{ consultation.client.user_profile.age }}
+                <br>Weight:- {{ consultation.client.user_profile.weight }}(Kg)
+                <br>Height:- {{ consultation.client.user_profile.height }}(cm)
+                <br>Gender:- {{ consultation.client.user_profile.gender }}
+                <br>Dietary Preference:- {{ consultation.client.user_profile.dietary_preference }}
+                </p>
+        </div>
+
+        <!-- Chat History -->
+        <div class="chat-history bg-light" id="chat-log">
+            <!-- Messages will load here dynamically -->
+            {% for message in messages_list %}
+                <p><strong>{{ message.sender.username }}:</strong> {{ message.text }}</p>
+            {% endfor %}
+        </div>
+        
+        <div class="d-flex mt-3">
+            <input id="chat-message-input" type="text" class="form-control me-3" placeholder="Type your message..." autocomplete="off" >
+            <button id="chat-message-submit" class="btn btn-primary" >Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const consultationId = '{{ consultation.id }}';
+    const userName = "{{ request.user.username }}";
+    const consultationDateTime = new Date("{{ consultation.date|date:'Y-m-d H:i:s' }}").getTime();
+
+    // Function to check if the current time is within the consultation time
+    function isWithinConsultationTime() {
+        const now = Date.now();
+        const consultationStartTime = consultationDateTime;
+        const consultationEndTime = consultationStartTime + 60 * 60 * 1000; // Assuming a 1-hour consultation
+
+        return now >= consultationStartTime && now <= consultationEndTime;
+    }
+
+    const chatSocket = new WebSocket(
+        `ws://${window.location.host}/ws/consultation/${consultationId}/`
+    );
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const chatLog = document.querySelector('#chat-log');
+        
+        const messageElement = document.createElement('p');
+        messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.message}`;
+        chatLog.appendChild(messageElement);
+
+        chatLog.scrollTop = chatLog.scrollHeight;
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    // Enable chat if within consultation time
+    if (isWithinConsultationTime()) {
+        document.querySelector('#chat-message-input').disabled = false;
+        document.querySelector('#chat-message-submit').disabled = false;
+    } else {
+        document.querySelector('#chat-message-input').disabled = true;
+        document.querySelector('#chat-message-submit').disabled = true;
+    }
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // Enter key
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'sender': userName
+        }));
+        messageInputDom.value = '';
+    };
+</script>
+
+{% endblock content %}

@@ -1,0 +1,86 @@
+<!-- user_profile.html -->
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock title %}
+
+{% block style %}
+<style>
+    /* Profile Page Styling */
+    .card-body {
+        background-color: #f9f9f9;
+    }
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.5em 0.75em;
+        margin: 0.25em;
+    }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Profile Card -->
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <img src="{{ user_profile.photo.url }}" alt="Profile Photo" class="img-fluid rounded-circle shadow" style="width: 150px; height: 150px;">
+                        <h3 class="mt-3 text-primary">{{ user_profile.full_name }}</h3>
+                        <p class="text-muted">User ID: {{ user_profile.user.id }}</p>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <!-- Basic Info -->
+                        <div class="col-md-6 mb-4">
+                            <h5 class="text-uppercase">Basic Information</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Age:</strong> {{ user_profile.age }}</li>
+                                <li><strong>Gender:</strong> {{ user_profile.gender }}</li>
+                                <li><strong>Height:</strong> {{ user_profile.height }} cm</li>
+                                <li><strong>Weight:</strong> {{ user_profile.weight }} kg</li>
+                            </ul>
+                        </div>
+                        <!-- Dietary Preferences -->
+                        <div class="col-md-6 mb-4">
+                            <h5 class="text-uppercase">Dietary Preferences</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Preference:</strong> {{ user_profile.dietary_preference }}</li>
+                                <li><strong>Dietary Goals:</strong>
+                                    {% for goal in user_profile.dietary_goal.all %}
+                                        <span class="badge bg-success">{{ goal.name }}</span>
+                                    {% empty %}
+                                        No specific goals
+                                    {% endfor %}
+                                </li>
+                                <li><strong>Chronic Conditions:</strong>
+                                    {% for condition in user_profile.chronic_condition.all %}
+                                        <span class="badge bg-warning">{{ condition.name }}</span>
+                                    {% empty %}
+                                        No chronic conditions
+                                    {% endfor %}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <hr>
+                    <!-- Health Metrics -->
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <h5 class="text-uppercase">Health Metrics</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Sugar Level:</strong> {{ user_profile.suger_level }} mg/dL</li>
+                                <li><strong>Cholesterol Level:</strong> {{ user_profile.cholestrol_level }} mg/dL</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Action Button -->
+                    <div class="text-center mt-4">
+                        <a href="{% url 'profile_update' %}" class="btn btn-outline-primary">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

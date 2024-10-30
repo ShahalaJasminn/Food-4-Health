@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Nutrition Plans{% endblock title %}
+
+{% block style %}
+    <style>
+        .nutrition-plan-item {
+            background-color: #ffffff;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: transform 0.2s;
+        }
+        .nutrition-plan-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        }
+        .nutrition-plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nutrition-plan-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #007bff;
+        }
+        .nutrition-plan-details {
+            margin-top: 10px;
+            height: 150px;
+            overflow-y: scroll;
+        }
+        .edit-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .edit-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+{% endblock style %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="">Your Nutrition Plans</h3>
+    <hr>
+    {% if nutrition_plans %}
+            {% for plan in nutrition_plans %}
+                <div class="nutrition-plan-item">
+                    <div class="nutrition-plan-header">
+                        <h3 class="text-capitalize">{{ plan.dietitian.dietitian_profile.full_name }}'s Plan</h3>
+                        <a href="{% url 'nutrition_detail' plan.id %}" class="edit-button">View Plan</a>
+                    </div>
+                    <div class="nutrition-plan-details">
+                        <p><strong>Plan Created On:</strong> {{ plan.created_at|date:"D, M d, Y" }}</p>
+                        <p><strong>Meal Types:</strong></p>
+                        <ul>
+                            {% for meal in plan.meal_types.all %}
+                                <li>{{ meal.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+        <div class="bg-white p-5 rounded shadow">
+            <p class="text-center">You do not have any nutrition plans yet.</p>
+        </div>
+        {% endif %}
+</div>
+{% endblock content %}

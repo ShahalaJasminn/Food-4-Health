@@ -1,0 +1,177 @@
+{% extends "dietitian_base.html" %}
+{% block title %}Nutrition Plan: {{ nutrition_plan.plan_name }}{% endblock title %}
+
+{% block style %}
+<style>
+    .nutrition-plan-container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+    .nutrition-plan-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    .meal-type {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        transition: background-color 0.3s ease;
+        position: relative;
+    }
+    .meal-type h4 {
+        color: #007bff;
+        display: inline;
+    }
+    .meal-details {
+        list-style: none;
+        padding: 0;
+    }
+    .meal-details li {
+        margin-bottom: 4px;
+    }
+    .btn-submit {
+        width: 100%;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+    .btn-delete-meal {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+    .loading-spinner {
+        display: inline-block;
+        margin-left: 8px;
+        border: 2px solid #ffffff;
+        border-top: 2px solid #007bff;
+        border-radius: 50%;
+        width: 14px;
+        height: 14px;
+        animation: spin 0.6s linear infinite;
+        vertical-align: middle;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="container py-4 nutrition-plan-container">
+    <div class="nutrition-plan-header">
+        <h2>{{ nutrition_plan.plan_name }}</h2>
+        <p>{{ nutrition_plan.description }}</p>
+        <p><strong>Created:</strong> {{ nutrition_plan.created_at|date:"M d, Y" }}</p>
+        <p><strong>Last Updated:</strong> {{ nutrition_plan.updated_at|date:"M d, Y" }}</p>
+        <a href="{% url 'edit_nutrition_plan' nutrition_plan.id %}" class="btn btn-warning btn-edit">Edit Plan</a>
+    </div>
+
+    <!-- Add Meal Type Form -->
+    <h3>Add Meal Type</h3>
+    <form id="add-meal-type-form" method="POST" data-url="{% url 'add_meal_type' nutrition_plan.id %}">
+        {% csrf_token %}
+        {{ meal_type_form.as_p }}
+        <button type="submit" class="btn btn-primary btn-submit">
+            Add Meal Type
+            <span class="loading-spinner" style="display: none;"></span>
+        </button>
+    </form>
+
+    <!-- Meal Types List -->
+    <h3 class="mt-4">Meal Types</h3>
+    <div id="meal-types-list">
+        {% for meal in nutrition_plan.meal_types.all %}
+            <div class="meal-type" id="meal-{{ meal.id }}">
+                <h4>{{ meal.name }}</h4>
+                <button class="btn btn-danger btn-delete-meal" data-meal-id="{{ meal.id }}">Delete</button>
+                <ul class="meal-details">
+                    <li><strong>Calories:</strong> {{ meal.calories }} kcal</li>
+                    <li><strong>Fat:</strong> {{ meal.fat }} g</li>
+                    <li><strong>Cholesterol:</strong> {{ meal.cholesterol }} mg</li>
+                    <li><strong>Protein:</strong> {{ meal.protein }} g</li>
+                    <li><strong>Carbohydrates:</strong> {{ meal.carbohydrates }} g</li>
+                </ul>
+            </div>
+        {% empty %}
+            <p>No meal types added to this plan.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+document.getElementById('add-meal-type-form').onsubmit = function(event) {
+    event.preventDefault();
+    const form = this;
+    const url = form.getAttribute('data-url');
+    const formData = new FormData(form);
+    const submitButton = form.querySelector('.btn-submit');
+    const spinner = form.querySelector('.loading-spinner');
+
+    // Show loading spinner and disable the button
+    spinner.style.display = 'inline-block';
+    submitButton.disabled = true;
+
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.meal) {
+            const mealHtml = `
+                <div class="meal-type" id="meal-${data.meal.id}">
+                    <h4>${data.meal.name}</h4>
+                    <button class="btn btn-danger btn-delete-meal" data-meal-id="${data.meal.id}">Delete</button>
+                    <ul class="meal-details">
+                        <li>Calories: ${data.meal.calories} kcal</li>
+                        <li>Fat: ${data.meal.fat} g</li>
+                        <li>Cholesterol: ${data.meal.cholesterol} mg</li>
+                        <li>Protein: ${data.meal.protein} g</li>
+                        <li>Carbohydrates: ${data.meal.carbohydrates} g</li>
+                    </ul>
+                </div>`;
+            document.getElementById('meal-types-list').insertAdjacentHTML('beforeend', mealHtml);
+            form.reset();
+        } else if (data.errors) {
+            alert("Failed to add meal type: " + JSON.stringify(data.errors));
+        }
+    })
+    .catch(error => console.error('Error:', error))
+    .finally(() => {
+        spinner.style.display = 'none';
+        submitButton.disabled = false;
+    });
+};
+
+// Delete meal type
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('btn-delete-meal')) {
+        const mealId = event.target.getAttribute('data-meal-id');
+        const url = `{% url 'delete_meal_type' 0 %}`.replace(0, mealId);
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`meal-${mealId}`).remove();
+            } else {
+                alert("Error deleting meal type.");
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+});
+</script>
+{% endblock content %}

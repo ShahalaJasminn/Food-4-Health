@@ -1,0 +1,79 @@
+<!-- personalized_diet_plan.html -->
+{% extends "base.html" %} {% block title %}Personalized Diet Plan{% endblock title %} 
+{% block style %}
+<style>
+  /* Styling for the personalized diet plan */
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  .food-image-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+  .card-body {
+    background-color: #f9f9f9;
+  }
+  .card-footer button:hover {
+    background-color: #007bff;
+    color: white;
+  }
+</style>
+{% endblock style %} {% block content %}
+<div class="container mt-5">
+  <h1 class="text-center display-4">
+    Diet Plan for <span class="text-primary">{{ user_profile.full_name }}</span>
+  </h1>
+  <p class="text-center text-muted">
+    Personalized suggestions based on your health goals and preferences
+  </p>
+
+  {% if suggested_plan %}
+  <div class="row mt-4">
+    {% for item in suggested_plan %}
+    <div class="col-md-4 mb-4 d-flex align-items-stretch">
+      <div class="card w-100 shadow border-0 h-100">
+        <div class="card-body text-center">
+          <div class="food-image-wrapper mb-3">
+            <img
+              src="{{ item.photo.thumb }}"
+              alt="Item photo"
+              class="img-fluid rounded-circle shadow-sm"
+              style="height: 120px; width: 120px; object-fit: cover"
+            />
+          </div>
+          <h5 class="card-title text-primary">{{ item.food_name|capfirst }}</h5>
+          <hr />
+          <p class="mb-2">
+            <strong>Calories:</strong>
+            <span class="text-warning">{{ item.nf_calories }} kcal</span>
+          </p>
+          <p class="mb-2">
+            <strong>Protein:</strong>
+            <span class="text-info">{{ item.nf_protein }} g</span>
+          </p>
+          <p class="mb-2">
+            <strong>Carbs:</strong>
+            <span class="text-success">{{ item.nf_total_carbohydrate }} g</span>
+          </p>
+          <p class="mb-2">
+            <strong>Fat:</strong>
+            <span class="text-danger">{{ item.nf_total_fat }} g</span>
+          </p>
+        </div>
+        
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center text-muted mt-5">
+    <p>No diet suggestions available.</p>
+    <p>
+      Try adjusting your preferences or contact your dietitian for assistance.
+    </p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock content %}

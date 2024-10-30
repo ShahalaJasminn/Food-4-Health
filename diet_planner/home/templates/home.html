@@ -1,0 +1,137 @@
+{% extends "home_base.html" %}
+{% load static %}
+
+{% block title %}Home{% endblock title %}
+
+{% block style %}
+    <style>
+        .account-card {
+            font-weight: 600;
+            background-color: lightgray;
+            transition: all ease-in 0.150s;
+            display: grid;
+        }
+        .account-card:hover {
+            background-color: gray;
+            color: white;
+        }
+        .account-card i {
+            font-size: 72px;
+        }
+        .read-more-btn{
+            background-color: orange;
+            color: white;
+            transition: all ease-in 0,150s;
+        }
+        .read-more-btn:hover {
+            background-color: darkorange;
+            color: white;
+        }
+
+    </style>
+{% endblock style %}
+
+{% block content %}
+
+    {% comment %} 
+        Banner
+    {% endcomment %}
+    <div class="row d-flex justify-content-center m-0 p-2" style="width: 100%; background-color: rgb(210, 227, 255);">
+        <!-- Text content -->
+        <div class="col-12 col-md-5 px-5 d-flex align-items-center">
+            <div>
+                <h1 class="fw-bold text-primary">
+                    <span style="display: block;">Food</span>
+                    <span style="display: block;">For</span>
+                    <span style="display: block;">Health</span>
+                </h1>
+                <p class="small text-dark">Explore an efficient Indian diet plan for weight loss, discover helpful tips, and access an effective diet chart to achieve your weight loss goals.</p>                
+            </div>
+        </div>
+        <!-- Image -->
+        <div class="col-12 col-md-5 d-flex align-items-center">
+            <img src="{% static 'assets/food.jpg' %}" class="img-fluid w-100" style="height: auto;" alt="">
+        </div>
+    </div>
+
+    {% comment %} 
+        Account Banner
+    {% endcomment %}
+    <div class="row d-flex justify-content-center m-0 mt-3 mb-5">
+        <div class="col-12 col-md-3 mb-3 p-2">
+            <a href="{% url 'login'%}" style="text-decoration: none; color: unset; display: grid;">
+            <div class="text-center p-5 rounded shadow-sm account-card">
+                <i class="fa-solid fa-user"></i>
+                <span>USER</span>
+            </a>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 mb-3 p-2">
+            <a href="{% url 'login'%}" style="text-decoration: none; color: unset; display: grid;">
+            <div class="text-center p-5 rounded shadow-sm account-card">
+                <i class="fa-solid fa-user-nurse"></i>
+                <span>DIETITIAN</span>
+            </a>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 mb-3 p-2">
+            <a href="{% url "login" %}" style="text-decoration: none; color: unset; display: grid;">
+            <div class="text-center p-5 rounded shadow-sm account-card">
+                <i class="fa-solid fa-user-tie"></i>
+                <span>ADMIN</span>
+            </a>
+            </div>
+        </div>
+    </div>
+
+    {% comment %} 
+        About US
+    {% endcomment %}
+
+    <div class="row d-flex justify-content-center m-0 mb-5 px-2 py-5" id="about" style="width: 100%;">
+        <!-- Text content -->
+        <div class="col-12 col-md-5 px-5 order-2 order-md-1">
+            <div>
+                <p class="fs-2 fw-bold">
+                    ABOUT US
+                </p>
+                <p class="small text-dark mb-5">The Health Diet Proposal project aims to develop a system that encourages users to adopt 
+                    healthier eating habits by providing personalized diet plans based on individual health assessments. It facilitates 
+                    communication between users and dietitians, enabling diet experts to monitor and recommend appropriate diet plans 
+                    tailored to each user's unique health profile.
+                </p>
+                <button class="btn btn-primary px-5 py-2 fw-bold text-uppercase">Read More</button>
+            </div>
+        </div>
+        <!-- Image -->
+        <div class="col-12 col-md-5 d-flex align-items-center order-1 order-md-2">
+            <img src="{% static 'assets/healthy.jpg' %}" class="img-fluid w-100" style="height: auto;" alt="">
+        </div>
+    </div>
+
+    {% comment %} 
+        About US
+    {% endcomment %}
+
+    <div class="row d-flex justify-content-center align-items-center m-0 px-2 py-5" style="width: 100%; background-color: rgb(210, 227, 255);">
+        <!-- Text content -->
+        <div class="col-12 col-md-6 px-5 order-1 order-md-2">
+            <div>
+                <h1 class="text-primary text-uppercase">
+                    We Provide Professional dietitian
+                </h1>
+                <p class="small text-dark mb-5">randomised words which don't look even slightly believable. If you are going to use a 
+                    passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All 
+                    randomised words which don't look even slightly.
+                </p>
+                <button class="btn px-5 py-2 fw-bold text-uppercase read-more-btn">Read More</button>
+            </div>
+        </div>
+        <!-- Image -->
+        <div class="col-12 col-md-6 d-flex align-items-center justify-content-end order-2 order-md-1">
+            <img src="{% static 'assets/image.png' %}" class="img-fluid" style="height: 90vh;" alt="">
+        </div>
+    </div>
+
+
+{% endblock content %}

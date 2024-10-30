@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Client Progress{% endblock title %}
+
+{% block style %}
+<style>
+    .progress-card {
+        margin-top: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .progress-bar {
+        transition: width 0.4s ease;
+    }
+    .progress-percentage {
+        font-weight: bold;
+        color: #fff;
+    }
+</style>
+{% endblock style %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h3>Progress for {{ client.username }}</h3>
+    <p class="text-muted">Tracking progress updates from the dietitian</p>
+
+    <!-- Check if there is progress to show -->
+    {% if progress_records %}
+        <!-- Loop through each progress record -->
+        {% for record in progress_records %}
+            <div class="progress-card card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Progress Update on {{ record.date_updated|date:"M d, Y" }}</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <small>Updated by: {{ record.dietitian.username }}</small>
+                        <span class="badge bg-primary">{{ record.progress }}%</span>
+                    </div>
+                    <!-- Progress Bar -->
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ record.progress }}%;" 
+                             aria-valuenow="{{ record.progress }}" 
+                             aria-valuemin="0" aria-valuemax="100">
+                            <span class="progress-percentage">{{ record.progress }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No progress records available for this client.</p>
+    {% endif %}
+</div>
+
+{% endblock content %}

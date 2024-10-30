@@ -1,0 +1,82 @@
+{% extends "dietitian_base.html" %}
+
+{% block title %}Consultation Details{% endblock title %}
+
+{% block style %}
+<style>
+    .consultation-details {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="consultation-details">
+        <h3>Consultation Details</h3>
+        <p class="text-capitalize"><strong>Client:</strong> {{ consultation.client.user_profile.full_name }}</p>
+        <p><strong>Date:</strong> {{ consultation.date|date:"Y-m-d" }}</p>
+        <p><strong>Time:</strong> {{ consultation.date|time:"H:i" }}</p>
+        <p>
+            <strong>Status:</strong>
+            {% if consultation.confirmed %}
+                <span class="badge bg-success">Confirmed</span>
+            {% else %}
+                <span class="badge bg-danger">Pending</span>
+            {% endif %}
+        </p>
+        <p><strong>About:</strong>
+        <br>Age:- {{ consultation.client.user_profile.age }}
+        <br>Weight:- {{ consultation.client.user_profile.weight }}(Kg)
+        <br>Height:- {{ consultation.client.user_profile.height }}(cm)
+        <br>Gender:- {{ consultation.client.user_profile.gender }}
+        <br>Dietary Preference:- {{ consultation.client.user_profile.dietary_preference }}
+        </p>
+
+        <hr>
+
+        <h4>Update Consultation</h4>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Update Consultation</button>
+        </form>
+
+        <hr>
+
+        <!-- Chat Button (Initially Disabled) -->
+        <button id="chat-button" class="btn btn-success" disabled>Chat with Client</button>
+        <a href="{% url 'appointments' %}" class="btn btn-secondary ms-2">Back to Consultations</a>
+    </div>
+</div>
+
+<script>
+    // Set consultation datetime for enabling chat button
+    const consultationDateTime = new Date("{{ consultation.date|date:'Y-m-d H:i:s' }}").getTime();
+    const chatButton = document.getElementById('chat-button');
+
+    console.log(consultationDateTime, chatButton);
+    
+
+    // Check every minute if it's time to enable the chat button
+    const checkChatAvailability = () => {
+        const now = Date.now();
+
+        if (now >= consultationDateTime) {
+            chatButton.disabled = false;
+            chatButton.onclick = () => {
+                window.location.href = "{% url 'chat' consultation.id %}";
+            };
+        } else {
+            chatButton.disabled = true;
+        }
+    };
+
+    // Initial check and set interval to recheck every 60 seconds
+    checkChatAvailability();
+    setInterval(checkChatAvailability, 60000);  // Check every 60 seconds
+</script>
+{% endblock content %}
