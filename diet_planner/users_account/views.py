@@ -61,7 +61,7 @@ def Profile_update(request):
         form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect('user_profile')
+            return redirect('home')
     else:
         form = UserProfileForm(instance=profile)
 

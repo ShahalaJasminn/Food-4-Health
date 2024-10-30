@@ -70,7 +70,11 @@
         <div class="profile-info">
             <h2>{{ dietitian.dietitian_profile.full_name }}</h2>
             <p class="fs-6 mb-3">{{ dietitian.dietitian_profile.qualifications }}</p>
-            <a href="{% url "book_consultation" dietitian.id %}" class="book-btn">Book a Consultation</a>
+            {% if dietitian.dietitian_profile.available %}
+            <a href="{% url "book_consultation" dietitian.id %}" class="btn btn-primary">Book a Consultation</a>
+            {% else %}
+            <button class="btn btn-primary" disabled>Book a Consultation</button>
+            {% endif %}
         </div>
     </div>
 

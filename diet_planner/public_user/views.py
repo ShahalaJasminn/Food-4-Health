@@ -4,11 +4,12 @@ from users_account.models import Accounts, User_Profile
 from dietitian.models import Availability, Consultation, NutritionPlan, ClientProgress
 from .utils import fetch_diet_plan
 from .forms import ConsultationBookingForm, MessageForm
+from admin_side.models import Specialties
 
 
 # Create your views here.
 def Dietitian_specialities(req):
-    specialities = ['General Nutrition', 'Weight Management', 'Sports Nutrition', 'Diabetes Management']
+    specialities = Specialties.objects.all()
     return render(req, "dietitian_plan.html", {'specialities': specialities})
 
 def Dietitians(req, speciality):

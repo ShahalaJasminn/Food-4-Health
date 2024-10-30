@@ -30,7 +30,9 @@
     <div class="certificate">
         <h3>Dietitian Certificate</h3>
         {% if dietitian.dietitian_profile.certificate %}
-            <embed src="{{ dietitian.dietitian_profile.certificate.url }}" type="application/pdf" width="600" height="500" />
+        <a href="{{ dietitian.dietitian_profile.certificate.url }}" target="_blank" class="btn btn-primary">
+            View Certificate
+        </a>        
         {% else %}
             <p>No certificate available.</p>
         {% endif %}
